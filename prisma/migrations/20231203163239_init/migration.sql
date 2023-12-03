@@ -1,13 +1,13 @@
 -- CreateTable
-CREATE TABLE `Produk` (
+CREATE TABLE `Product` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(191) NOT NULL,
     `category` VARCHAR(191) NOT NULL,
     `location` VARCHAR(191) NOT NULL,
-    `imageURL` VARCHAR(191) NOT NULL,
+    `imageURL` TEXT NOT NULL,
     `date` DATETIME(3) NOT NULL,
     `price` INTEGER NOT NULL,
-    `description` VARCHAR(191) NOT NULL,
+    `description` TEXT NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -15,12 +15,13 @@ CREATE TABLE `Produk` (
 -- CreateTable
 CREATE TABLE `Pemesanan` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `kodeTiket` VARCHAR(191) NOT NULL,
     `namaPelanggan` VARCHAR(191) NOT NULL,
     `emailPelanggan` VARCHAR(191) NOT NULL,
     `teleponPelanggan` VARCHAR(191) NOT NULL,
     `idProduk` INTEGER NOT NULL,
     `jumlahTiket` INTEGER NOT NULL,
-    `kodeTiket` VARCHAR(191) NOT NULL,
+    `totalHarga` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -37,4 +38,4 @@ CREATE TABLE `Message` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `Pemesanan` ADD CONSTRAINT `Pemesanan_idProduk_fkey` FOREIGN KEY (`idProduk`) REFERENCES `Produk`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Pemesanan` ADD CONSTRAINT `Pemesanan_idProduk_fkey` FOREIGN KEY (`idProduk`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

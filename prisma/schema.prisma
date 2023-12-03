@@ -11,28 +11,30 @@ datasource db {
 }
 
 
-model Produk {
-  id          Int      @id @default(autoincrement())
+model Product {
+  id          Int       @id @default(autoincrement())
   title       String
   category    String
   location    String
-  imageURL    String
+  imageURL    String @db.Text
   date        DateTime
   price       Int
-  description String
-  Pemesanan   Pemesanan[]
+  description String @db.Text
+  pemesanans  Pemesanan[]
 }
 
 model Pemesanan {
-  id               Int      @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
+  kodeTiket        String
   namaPelanggan    String
   emailPelanggan   String
   teleponPelanggan String
   idProduk         Int
   jumlahTiket      Int
-  kodeTiket        String
-  Produk           Produk   @relation(fields: [idProduk], references: [id])
+  totalHarga       Int
+  produk           Product   @relation(fields: [idProduk], references: [id])
 }
+
 
 model Message {
   id      Int      @id @default(autoincrement())
