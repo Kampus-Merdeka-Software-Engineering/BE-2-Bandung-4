@@ -1,38 +1,23 @@
+require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const app = express();
-const port = 3000; // Port
-// Endpoint untuk mendapatkan daftar tour
-app.get("/tours", (req, res) => {
-  const tours = [
-    {
-      id: 1,
-      name: "Gunung Bromo",
-      description: "Ikon alam Indonesia yang menakjubkan...",
-    },
-    {
-      id: 2,
-      name: "Nusa Penida",
-      description:
-        "Pulau yang menakjubkan di Indonesia dengan pantai-pantai eksotis...",
-    },
-    {
-      id: 3,
-      name: "Kawah Ijen",
-      description:
-        "Tempat yang luar biasa dengan danau asam biru terbesar di dunia serta fenomena api biru...",
-    },
-    {
-      id: 4,
-      name: "Candi Borobudur",
-      description:
-        "Keajaiban arsitektur Buddha di Indonesia, dengan struktur monumental yang menakjubkan...",
-    },
-  ];
+const PORT = process.env.PORT || 3000;
 
-  res.json(tours);
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.get("/", async (req, res) => {
+  res.send("respon");
 });
 
-// Menjalankan server
-app.listen(port, () => {
-  console.log(`Server berjalan di http://localhost:${port}`);
+app.all("*", async (req, res) => {
+  res.json({
+    message: "tidak ada router",
+  });
+});
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`server is ready running at ${PORT}`);
 });
