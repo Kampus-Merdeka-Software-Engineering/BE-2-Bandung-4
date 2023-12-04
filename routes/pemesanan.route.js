@@ -2,21 +2,6 @@ const express = require("express");
 const { prisma } = require("../config/prisma");
 const pemesananRoutes = express.Router();
 
-// Endpoint untuk mendapatkan semua pemesanan
-pemesananRoutes.get("/", async (req, res) => {
-  try {
-    const orders = await prisma.pemesanan.findMany({
-      include: {
-        product: true,
-      },
-    });
-    res.status(200).json(orders);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
 // Endpoint untuk membuat pemesanan baru
 pemesananRoutes.post("/", async (req, res) => {
   try {
@@ -78,16 +63,24 @@ pemesananRoutes.post("/", async (req, res) => {
   }
 });
 
-// Endpoint untuk mendapatkan pemesanan berdasarkan ID
+// Endpoint untuk mendapatkan semua pemesanan
+pemesananRoutes.get("/", async (req, res) => {
+  try {
+    const orders = await prisma.pemesanan.findMany();
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// untuk mendapatkan pemesanan berdasarkan ID
 pemesananRoutes.get("/:id", async (req, res) => {
   const orderId = parseInt(req.params.id);
 
   try {
     const order = await prisma.pemesanan.findUnique({
-      where: { id: orderId },
-      include: {
-        product: true,
-      },
+      where: { id: idProduk },
     });
 
     if (!order) {
@@ -101,13 +94,13 @@ pemesananRoutes.get("/:id", async (req, res) => {
   }
 });
 
-// Endpoint untuk memperbarui pemesanan berdasarkan ID
+// untuk memperbarui pemesanan berdasarkan ID
 pemesananRoutes.put("/:id", async (req, res) => {
   const orderId = parseInt(req.params.id);
 
   try {
     const updatedOrder = await prisma.pemesanan.update({
-      where: { id: orderId },
+      where: { id: idProduk },
       data: req.body,
     });
     res.status(200).json(updatedOrder);
@@ -117,13 +110,13 @@ pemesananRoutes.put("/:id", async (req, res) => {
   }
 });
 
-// Endpoint untuk menghapus pemesanan berdasarkan ID
+// untuk menghapus pemesanan berdasarkan ID
 pemesananRoutes.delete("/:id", async (req, res) => {
   const orderId = parseInt(req.params.id);
 
   try {
     await prisma.pemesanan.delete({
-      where: { id: orderId },
+      where: { id: idProduk },
     });
     res.status(204).send();
   } catch (error) {
