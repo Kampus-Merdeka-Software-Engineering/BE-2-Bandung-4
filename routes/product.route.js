@@ -34,8 +34,16 @@ productRoutes.get("/:id", async (req, res) => {
 
 // Endpoint untuk membuat produk baru
 productRoutes.post("/", async (req, res) => {
-  const { title, category, location, imageURL, date, price, description } =
-    req.body;
+  const {
+    title,
+    category,
+    location,
+    imageURL,
+    date,
+    price,
+    description,
+    jumlahOrang,
+  } = req.body;
 
   try {
     const newProduct = await prisma.product.create({
@@ -47,6 +55,7 @@ productRoutes.post("/", async (req, res) => {
         date: new Date(date),
         price,
         description,
+        jumlahOrang,
       },
     });
 
@@ -64,7 +73,7 @@ productRoutes.put("/:id", async (req, res) => {
   try {
     const updatedProduct = await prisma.product.update({
       where: { id: productId },
-      data: req.body,
+      data: { ...req.body, date: new Date(req.body.date) },
     });
     res.status(200).json(updatedProduct);
   } catch (error) {

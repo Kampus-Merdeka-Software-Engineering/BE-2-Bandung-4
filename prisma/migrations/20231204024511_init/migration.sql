@@ -8,6 +8,7 @@ CREATE TABLE `Product` (
     `date` DATETIME(3) NOT NULL,
     `price` INTEGER NOT NULL,
     `description` TEXT NOT NULL,
+    `jumlahOrang` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -20,7 +21,7 @@ CREATE TABLE `Pemesanan` (
     `emailPelanggan` VARCHAR(191) NOT NULL,
     `teleponPelanggan` VARCHAR(191) NOT NULL,
     `idProduk` INTEGER NOT NULL,
-    `jumlahTiket` INTEGER NOT NULL,
+    `jumlahOrang` INTEGER NOT NULL,
     `totalHarga` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
