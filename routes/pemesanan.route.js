@@ -2,123 +2,87 @@ const express = require("express");
 const { prisma } = require("../config/prisma");
 const pemesananRoutes = express.Router();
 
-// Endpoint untuk membuat pemesanan baru
+// Create Pemesanan
 pemesananRoutes.post("/", async (req, res) => {
   try {
-    const {
-      kodeTiket,
-      namaPelanggan,
-      emailPelanggan,
-      teleponPelanggan,
-      orders,
-    } = req.body;
+    const { idProduk, jumlahOrang } = req.body;
+    const product = await prisma.product.findUnique({
+      where: { id: idProduk },
+    });
 
-    if (!orders || !Array.isArray(orders) || orders.length === 0) {
-      return res.status(400).json({ error: "Invalid order payload" });
+    if (!product) {
+      res.status(404).json({ error: "Product not found" });
+      return;
     }
 
-    const createdOrders = await Promise.all(
-      orders.map(async (order) => {
-        const { idProduk, jumlahOrang } = order;
+    // jika nambah 1 orang
+    const additionalCharge = 0.5;
+    const totalHarga =
+      product.price * jumlahOrang * (1 + additionalCharge * (jumlahOrang - 1));
 
-        if (!idProduk || !jumlahOrang || jumlahOrang <= 0) {
-          return res.status(400).json({ error: "Invalid order details" });
-        }
+    const newPemesanan = await prisma.pemesanan.create({
+      data: { ...req.body, totalHarga },
+    });
 
-        const product = await prisma.product.findUnique({
-          where: { id: idProduk },
-        });
-
-        if (!product) {
-          return res.status(404).json({ error: "Product not found" });
-        }
-
-        // Hitung total harga dengan aturan tambahan
-        const basePrice = product.price;
-        const additionalPercentage = 0.2; // 20% tambahan per orang
-        const additionalPrice = Math.floor(basePrice * additionalPercentage);
-
-        const totalHarga = basePrice + additionalPrice * (jumlahOrang - 1);
-
-        const newOrder = await prisma.pemesanan.create({
-          data: {
-            kodeTiket,
-            namaPelanggan,
-            emailPelanggan,
-            teleponPelanggan,
-            idProduk,
-            jumlahOrang,
-            totalHarga,
-          },
-        });
-
-        return newOrder;
-      })
-    );
-
-    res.status(201).json(createdOrders);
+    res.json(newPemesanan);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// Endpoint untuk mendapatkan semua pemesanan
+// READ all pemesanan
 pemesananRoutes.get("/", async (req, res) => {
   try {
-    const orders = await prisma.pemesanan.findMany();
-    res.status(200).json(orders);
+    const pemesanan = await prisma.pemesanan.findMany();
+    res.json(pemesanan);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// untuk mendapatkan pemesanan berdasarkan ID
+// READ one pemesanan by ID
 pemesananRoutes.get("/:id", async (req, res) => {
-  const orderId = parseInt(req.params.id);
-
+  const { id } = req.params;
   try {
-    const order = await prisma.pemesanan.findUnique({
-      where: { id: idProduk },
+    const pemesanan = await prisma.pemesanan.findUnique({
+      where: { id: parseInt(id) },
     });
-
-    if (!order) {
-      return res.status(404).json({ error: "Order not found" });
+    if (!pemesanan) {
+      res.status(404).json({ error: "Pemesanan not found" });
+    } else {
+      res.json(pemesanan);
     }
-
-    res.status(200).json(order);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// untuk memperbarui pemesanan berdasarkan ID
+// UPDATE pemesanan
 pemesananRoutes.put("/:id", async (req, res) => {
-  const orderId = parseInt(req.params.id);
-
+  const { id } = req.params;
   try {
-    const updatedOrder = await prisma.pemesanan.update({
-      where: { id: idProduk },
+    const updatedPemesanan = await prisma.pemesanan.update({
+      where: { id: parseInt(id) },
       data: req.body,
     });
-    res.status(200).json(updatedOrder);
+    res.json(updatedPemesanan);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// untuk menghapus pemesanan berdasarkan ID
+// DELETE pemesanan
 pemesananRoutes.delete("/:id", async (req, res) => {
-  const orderId = parseInt(req.params.id);
-
+  const { id } = req.params;
   try {
-    await prisma.pemesanan.delete({
-      where: { id: idProduk },
+    const deletedPemesanan = await prisma.pemesanan.delete({
+      where: { id: parseInt(id) },
     });
-    res.status(204).send();
+    res.json(deletedPemesanan);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
