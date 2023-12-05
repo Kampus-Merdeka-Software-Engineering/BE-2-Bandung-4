@@ -1,72 +1,84 @@
 const express = require("express");
-const { prisma } = require("../config/prisma");
 const productRoutes = express.Router();
+const { prisma } = require("../config/prisma");
 
-//create
+// Get all products
+productRoutes.get("/", async (req, res) => {
+  try {
+    const products = await prisma.product.findMany();
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Get product by id
+productRoutes.get("/:id", async (req, res) => {
+  try {
+    const productId = parseInt(req.params.id);
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Create product
 productRoutes.post("/", async (req, res) => {
   try {
     const newProduct = await prisma.product.create({
       data: req.body,
     });
-    res.json(newProduct);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
-// READ all products
-productRoutes.get("/", async (req, res) => {
-  try {
-    const products = await prisma.product.findMany();
-    res.json(products);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// READ one product by ID
-productRoutes.get("/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const product = await prisma.product.findUnique({
-      where: { id: parseInt(id) },
+    res.status(201).json({
+      message: "Product created",
+      data: newProduct,
     });
-    if (!product) {
-      res.status(404).json({ error: "Product not found" });
-    } else {
-      res.json(product);
-    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// UPDATE
+// Update product
 productRoutes.put("/:id", async (req, res) => {
-  const { id } = req.params;
   try {
+    const productId = parseInt(req.params.id);
     const updatedProduct = await prisma.product.update({
-      where: { id: parseInt(id) },
+      where: { id: productId },
       data: req.body,
     });
-    res.json(updatedProduct);
+
+    res.status(200).json({
+      message: `Product with id: ${productId} is updated`,
+      data: updatedProduct,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// DELETE
+// Delete product
 productRoutes.delete("/:id", async (req, res) => {
-  const { id } = req.params;
   try {
-    const deletedProduct = await prisma.product.delete({
-      where: { id: parseInt(id) },
+    const productId = parseInt(req.params.id);
+    await prisma.product.delete({
+      where: { id: productId },
     });
-    res.json({ message: "Product deleted successfully", deletedProduct });
+
+    res.status(200).json({
+      message: `Product with id: ${productId} successfully deleted`,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
