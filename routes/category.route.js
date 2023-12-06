@@ -13,6 +13,27 @@ categoryRoutes.get("/", async (req, res) => {
   }
 });
 
+// Mendapatkan produk berdasarkan kategori
+categoryRoutes.get("/:categoryId/product", async (req, res) => {
+  const categoryId = parseInt(req.params.categoryId);
+
+  try {
+    const categoryWithProducts = await prisma.category.findUnique({
+      where: { id: categoryId },
+      include: { products: true },
+    });
+
+    if (!categoryWithProducts) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    res.status(200).json(categoryWithProducts.products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // Get category by id
 categoryRoutes.get("/:id", async (req, res) => {
   try {

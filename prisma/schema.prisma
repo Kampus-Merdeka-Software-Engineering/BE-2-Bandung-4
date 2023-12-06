@@ -36,7 +36,7 @@ model Pemesanan {
   kodeTiket        String?
   namaPelanggan    String
   emailPelanggan   String
-  teleponPelanggan String
+  teleponPelanggan Int
   idProduk         Int
   jumlahOrang      Int      
   totalHarga       Int?
@@ -49,6 +49,6 @@ model Message {
   id      Int      @id @default(autoincrement())
   name    String
   email   String
-  phone   String
+  phone   Int
   message String
 }
