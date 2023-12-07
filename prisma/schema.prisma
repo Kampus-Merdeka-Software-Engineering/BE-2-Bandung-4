@@ -50,5 +50,5 @@ model Message {
   name    String
   email   String
   phone   Int
-  message String
+  message String @db.Text
 }
