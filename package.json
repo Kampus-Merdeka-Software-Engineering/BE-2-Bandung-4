@@ -12,7 +12,7 @@
     "prisma",
     "mysql"
   ],
-  "author": "Sarito",
+  "author": "Sarito,Abinus",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.6.0",
