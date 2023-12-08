@@ -90,13 +90,13 @@ productRoutes.get("/filter", async (req, res) => {
   try {
     const { lokasi, tipeTrip, bulan } = req.query;
 
-    // Buat objek filter berdasarkan parameter yang diberikan
+    // Buat apa yang mau di fiter
     const filter = {};
     if (lokasi) filter.location = { contains: lokasi.toLowerCase() };
     if (tipeTrip) filter.category = { contains: tipeTrip.toLowerCase() };
-    if (bulan) filter.date = { contains: bulan }; // Sesuaikan dengan format tanggal yang digunakan di basis data
+    if (bulan) filter.date = { gte: new Date(bulan) }; // Sesuaikan dengan format dan logika pencocokan tanggal yang benar
 
-    // Lakukan filter pada data produk
+    // query filter
     const filteredProducts = await prisma.product.findMany({
       where: filter,
     });
