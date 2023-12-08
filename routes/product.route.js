@@ -85,4 +85,27 @@ productRoutes.delete("/:id", async (req, res) => {
   }
 });
 
+// Get products with filter
+productRoutes.get("/filter", async (req, res) => {
+  try {
+    const { lokasi, tipeTrip, bulan } = req.query;
+
+    // Buat objek filter berdasarkan parameter yang diberikan
+    const filter = {};
+    if (lokasi) filter.location = { contains: lokasi.toLowerCase() };
+    if (tipeTrip) filter.category = { contains: tipeTrip.toLowerCase() };
+    if (bulan) filter.date = { contains: bulan }; // Sesuaikan dengan format tanggal yang digunakan di basis data
+
+    // Lakukan filter pada data produk
+    const filteredProducts = await prisma.product.findMany({
+      where: filter,
+    });
+
+    res.status(200).json(filteredProducts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 module.exports = { productRoutes };
