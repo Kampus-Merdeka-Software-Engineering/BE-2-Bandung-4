@@ -11,7 +11,7 @@ productRoutes.get("/", async (req, res) => {
     if (lokasi) filter.location = { contains: lokasi.toLowerCase() };
     if (tipeTrip)
       filter.categoryId = { equals: Number(tipeTrip.toLowerCase()) };
-    if (bulan) filter.date = { gte: new Date(bulan) }; // Sesuaikan dengan format dan logika pencocokan tanggal yang benar
+    if (bulan) filter.date = { gte: new Date(bulan) };
 
     const size = Object.keys(filter).length;
     let products;
