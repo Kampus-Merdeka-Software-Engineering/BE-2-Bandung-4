@@ -4,8 +4,24 @@ const { prisma } = require("../config/prisma");
 
 // Get all products
 productRoutes.get("/", async (req, res) => {
+  const { lokasi, tipeTrip, bulan } = req.query;
+
   try {
-    const products = await prisma.product.findMany();
+    const filter = {};
+    if (lokasi) filter.location = { contains: lokasi.toLowerCase() };
+    if (tipeTrip)
+      filter.categoryId = { equals: Number(tipeTrip.toLowerCase()) };
+    if (bulan) filter.date = { gte: new Date(bulan) }; // Sesuaikan dengan format dan logika pencocokan tanggal yang benar
+
+    const size = Object.keys(filter).length;
+    let products;
+    if (size) {
+      products = await prisma.product.findMany({
+        where: filter,
+      });
+    } else {
+      products = await prisma.product.findMany();
+    }
     res.status(200).json(products);
   } catch (error) {
     console.error(error);
@@ -79,29 +95,6 @@ productRoutes.delete("/:id", async (req, res) => {
     res.status(200).json({
       message: `Product with id: ${productId} successfully deleted`,
     });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// Get products with filter
-productRoutes.get("/filter", async (req, res) => {
-  try {
-    const { lokasi, tipeTrip, bulan } = req.query;
-
-    // Buat apa yang mau di fiter
-    const filter = {};
-    if (lokasi) filter.location = { contains: lokasi.toLowerCase() };
-    if (tipeTrip) filter.category = { contains: tipeTrip.toLowerCase() };
-    if (bulan) filter.date = { gte: new Date(bulan) }; // Sesuaikan dengan format dan logika pencocokan tanggal yang benar
-
-    // query filter
-    const filteredProducts = await prisma.product.findMany({
-      where: filter,
-    });
-
-    res.status(200).json(filteredProducts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

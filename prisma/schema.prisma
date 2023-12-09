@@ -49,6 +49,6 @@ model Message {
   id      Int      @id @default(autoincrement())
   name    String
   email   String
-  phone   Int
+  phone   String
   message String @db.Text
 }
